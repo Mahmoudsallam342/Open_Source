@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import * as YUP from "yup";
+import { countercontext } from "../../../context/Context";
 export default function Register() {
   let navigate = useNavigate();
   let [apiErrors, setApiErrors] = useState("");
   let [spinner, setSpinner] = useState(false);
+  let { setToken } = useContext(countercontext);
   //* axios post values to api
   async function handleRegister(values) {
     try {
@@ -15,9 +17,13 @@ export default function Register() {
         "https://ecommerce.routemisr.com/api/v1/auth/signup",
         values,
       );
-      navigate("/login");
+      if (data.message == "success") {
+        setToken(data.token);
+        localStorage.setItem("userToken", data.token);
+        navigate("/login");
 
-      console.log(data);
+        console.log(data);
+      }
     } catch (error) {
       setApiErrors(error?.response?.data?.message);
     } finally {
@@ -196,52 +202,17 @@ export default function Register() {
           >
             Register
           </button>
-          <Link to="/login" className="text-blue-400 hover:text-blue-800">
-            Login 🔜
-          </Link>
+          <p className="text-center text-gray-600 mt-4">
+            have already an account?{" "}
+            <Link
+              to="/register"
+              className="text-blue-600 font-semibold hover:underline"
+            >
+              Login
+            </Link>
+          </p>
         </form>
       </div>
     </div>
   );
 }
-
-// validate: (values) => {
-//   let errors = {};
-
-//   // userName
-//   if (!values.name) {
-//     errors.name = "name is required";
-//   } else if (values.name.length < 3) {
-//     errors.name = "min length is 3";
-//   }
-
-//   // email
-//   if (!values.email) {
-//     errors.email = "email is required";
-//   } else if (!values.email.includes("@")) {
-//     errors.email = "invalid email";
-//   }
-
-//   // password
-//   if (!values.password) {
-//     errors.password = "password is required";
-//   } else if (values.password.length < 6) {
-//     errors.password = "min length is 6";
-//   }
-
-//   // rePassword
-//   if (!values.rePassword) {
-//     errors.rePassword = "rePassword is required";
-//   } else if (values.rePassword !== values.password) {
-//     errors.rePassword = "password does not match";
-//   }
-
-//   // phone
-//   if (!values.phone) {
-//     errors.phone = "phone is required";
-//   } else if (!/^01[0125][0-9]{8}$/.test(values.phone)) {
-//     errors.phone = "invalid egypt phone";
-//   }
-
-//   return errors;
-// },

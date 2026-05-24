@@ -8,6 +8,8 @@ import Register from "./components/auth/register/Register";
 import Products from "./components/products/Products";
 import Cart from "./components/cart/Cart";
 import NotFound from "./components/notFound/NotFound";
+import { CounterProvider } from "./context/Context";
+import ProductDetails from "./components/productsDetails/ProductDetails";
 
 function App() {
   let router = createBrowserRouter([
@@ -19,6 +21,11 @@ function App() {
           index: true,
           element: <Home />,
         },
+        {
+          path: "product/:id",
+          element: <ProductDetails />,
+        },
+
         {
           path: "brands",
           element: <Brands />,
@@ -52,7 +59,9 @@ function App() {
   ]);
   return (
     <>
-      <RouterProvider router={router} />
+      <CounterProvider>
+        <RouterProvider router={router} />
+      </CounterProvider>
     </>
   );
 }

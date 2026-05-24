@@ -1,23 +1,28 @@
 import axios from "axios";
 import { useFormik } from "formik";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import * as YUP from "yup";
+import { countercontext } from "../../../context/Context";
 export default function Login() {
   let navigate = useNavigate();
   let [apiErrors, setApiErrors] = useState("");
   let [spinner, setSpinner] = useState(false);
+  let { userToken } = useContext(countercontext);
   //* axios post values to api
   async function handleLogin(values) {
+    setSpinner(true);
     try {
-      setSpinner(true);
       let { data } = await axios.post(
         "https://ecommerce.routemisr.com/api/v1/auth/signin",
         values,
       );
-      navigate("/home");
+      if (data.message == "success") {
+        userToken(data.token);
+        navigate("/");
 
-      console.log(data);
+        console.log(data);
+      }
     } catch (error) {
       setApiErrors(error?.response?.data?.message);
     } finally {
@@ -119,6 +124,15 @@ export default function Login() {
           >
             Login
           </button>
+          <p className="text-center text-gray-600 mt-4">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              className="text-blue-600 font-semibold hover:underline"
+            >
+              Register
+            </Link>
+          </p>
         </form>
       </div>
     </div>
